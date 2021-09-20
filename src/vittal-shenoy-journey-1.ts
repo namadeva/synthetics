@@ -1,28 +1,14 @@
-const { chromium } = require('playwright');
-const browser = await chromium.launch()
-const page = await browser.newPage()
-const navigationPromise = page.waitForNavigation()
+import { journey, step, expect } from '@elastic/synthetics';
 
-await page.goto('http://vittalshenoy.com/pages/index.go')
-
-await page.setViewportSize({ width: 2048, height: 1038 })
-
-await page.waitForSelector('.navbar > #navbar > .nav > .megamenu > .dropdown-toggle')
-await page.click('.navbar > #navbar > .nav > .megamenu > .dropdown-toggle')
-
-await page.waitForSelector('.dropdown-menu > .row-fluid > .nav:nth-child(2) > li:nth-child(2) > a')
-await page.click('.dropdown-menu > .row-fluid > .nav:nth-child(2) > li:nth-child(2) > a')
-
-await navigationPromise
-
-await page.waitForSelector('.navbar > #navbar > .nav > .dropdown:nth-child(2) > .dropdown-toggle')
-await page.click('.navbar > #navbar > .nav > .dropdown:nth-child(2) > .dropdown-toggle')
-
-await navigationPromise
-
-await page.waitForSelector('.nav > .dropdown > .dropdown-menu > li:nth-child(5) > a')
-await page.click('.nav > .dropdown > .dropdown-menu > li:nth-child(5) > a')
-
-await navigationPromise
-
-await browser.close()
+journey("Ensure placeholder is correct", ({page}) => {
+    step("go to todos demo page", async () => {
+      await page.goto('https://elastic.github.io/synthetics-demo/');
+    })
+    step("assert placeholder text", async () => {
+      const placeholderValue = await page.getAttribute(
+        'input.new-todo',
+        'placeholder'
+      );
+      expect(placeholderValue).toBe('What needs to be done?');
+    })
+});
